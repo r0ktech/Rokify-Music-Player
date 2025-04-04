@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #121212;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .player-container {
+      background-color: #282828;
+      border-radius: 10px;
+      padding: 20px;
+      width: 350px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .album-art {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .album-art img {
+      width: 100%;
+      border-radius: 5px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .song-info {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .song-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .artist {
+      font-size: 14px;
+      color: #b3b3b3;
+    }
+
+    .player-controls {
+      margin-bottom: 20px;
+    }
+
+    .progress-container {
+      margin-bottom: 15px;
+    }
+
+    .progress-bar {
+      height: 5px;
+      background-color: #535353;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-bottom: 5px;
+    }
+
+    .progress {
+      height: 100%;
+      background-color: #1db954;
+      border-radius: 5px;
+      width: 0%;
+      transition: width 0.1s linear;
+    }
+
+    .time-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #b3b3b3;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .control-btn {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .control-btn:hover {
+      color: #1db954;
+    }
+
+    .play-btn {
+      background-color: #1db954;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: transform 0.2s;
+    }
+
+    .play-btn:hover {
+      transform: scale(1.05);
+      color: #fff;
+    }
+
+    .volume-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .volume-slider {
+      width: 100%;
+      height: 5px;
+      -webkit-appearance: none;
+      background: #535353;
+      border-radius: 5px;
+      outline: none;
+    }
+
+    .volume-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 15px;
+      height: 15px;
+      background: #fff;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+  </style>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Spotify Clone--- (roktech)</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="player-container">
+      <div class="album-art">
+        <img
+          src="https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228"
+          alt="Album Art"
+        />
+      </div>
+      <div class="song-info">
+        <h2 class="song-title">Blinding Lights</h2>
+        <p class="artist">The Weeknd</p>
+      </div>
+      <div class="player-controls">
+        <div class="progress-container">
+          <div class="progress-bar">
+            <div class="progress"></div>
+          </div>
+          <div class="time-info">
+            <span class="current-time">0:00</span>
+            <span class="duration">3:20</span>
+          </div>
+        </div>
+        <div class="controls">
+          <button class="control-btn shuffle-btn" title="Shuffle">
+            <i class="fas fa-random"></i>
+          </button>
+          <button class="control-btn prev-btn" title="Previous">
+            <i class="fas fa-step-backward"></i>
+          </button>
+          <button class="control-btn play-btn" title="Play">
+            <i class="fas fa-play"></i>
+          </button>
+          <button class="control-btn next-btn" title="Next">
+            <i class="fas fa-step-forward"></i>
+          </button>
+          <button class="control-btn repeat-btn" title="Repeat">
+            <i class="fas fa-redo"></i>
+          </button>
+        </div>
+      </div>
+      <div class="volume-control">
+        <i class="fas fa-volume-down"></i>
+        <input
+          type="range"
+          class="volume-slider"
+          min="0"
+          max="100"
+          value="70"
+        />
+        <i class="fas fa-volume-up"></i>
+      </div>
+    </div>
+
+    <audio
+      id="audio"
+      src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+    ></audio>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const audio = document.getElementById("audio");
+        const playBtn = document.querySelector(".play-btn");
+        const prevBtn = document.querySelector(".prev-btn");
+        const nextBtn = document.querySelector(".next-btn");
+        const progressBar = document.querySelector(".progress-bar");
+        const progress = document.querySelector(".progress");
+        const currentTimeEl = document.querySelector(".current-time");
+        const durationEl = document.querySelector(".duration");
+        const volumeSlider = document.querySelector(".volume-slider");
+
+        // Sample playlist
+        const songs = [
+          {
+            title: "Algorithm",
+            artist: "roktech",
+            src: "algorithm.mp3",
+            cover:
+              "https://imgs.search.brave.com/IkuKGsJgLLKubn6MG-QKpXCV1l_2H-Am3iAoui5Dzgs/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9pLnBp/bmltZy5jb20vb3Jp/Z2luYWxzL2EwLzNi/L2MwL2EwM2JjMGY1/OTE3ZDMyNzVhMDYw/ODM0NzM4N2M3NDE4/LmpwZw",
+          },
+          {
+            title: "Alita",
+            artist: "roktech",
+            src: "alita.mp3",
+            cover:
+              "https://imgs.search.brave.com/9sQlcosZSDJ5zqiYRT2n8WFEgo1XZtViRmSuMwOkOdk/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvMTMw/NTA1ODQyMy9waG90/by95ZWxsb3ctb3Jh/bmdlLWRpc2MtY292/ZXIuanBnP3M9NjEy/eDYxMiZ3PTAmaz0y/MCZjPTdINklYcnUy/aUZjMnVSdEdsZDV6/b1BmcWZKMl9wWjk3/RVVDbDRFMlM3ek09",
+          },
+          {
+            title: "Stardust",
+            artist: "roktech",
+            src: "stardust.mp3",
+            cover:
+              "https://imgs.search.brave.com/tf4VE6eB7hvvV7tKHTpv4mwLoXdOBRr4oiYo5gWDhJg/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9zY2Fs/YWMuaW8vd3AtY29u/dGVudC91cGxvYWRz/LzIwMjEvMTEvNDAw/XzMwMDMzLnBuZw",
+          },
+          {
+            title: "Drip_too_hard",
+            artist: "roktech",
+            src: "drip.mp3",
+            cover:
+              "https://imgs.search.brave.com/l7V3jP7xSypm4ChBa8yXbuScekXxblcg1rW-reg6ziU/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9pLnBp/bmltZy5jb20vb3Jp/Z2luYWxzLzMxL2U2/LzFmLzMxZTYxZjRk/MjFiM2MxNGI0MThi/OWExYTBkNDE5NjJi/LmpwZw",
+          },
+        ];
+
+        let currentSongIndex = 0;
+
+        // Initialize
+        function loadSong(song) {
+          audio.src = song.src;
+          document.querySelector(".song-title").textContent = song.title;
+          document.querySelector(".artist").textContent = song.artist;
+          document.querySelector(".album-art img").src = song.cover;
+        }
+
+        // Play or pause
+        function togglePlay() {
+          if (audio.paused) {
+            audio.play();
+            playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+          } else {
+            audio.pause();
+            playBtn.innerHTML = '<i class="fas fa-play"></i>';
+          }
+        }
+
+        // Update progress bar
+        function updateProgress(e) {
+          const { duration, currentTime } = e.srcElement;
+          const progressPercent = (currentTime / duration) * 100;
+          progress.style.width = `${progressPercent}%`;
+
+          // Update time display
+          const durationMinutes = Math.floor(duration / 60);
+          let durationSeconds = Math.floor(duration % 60);
+          if (durationSeconds < 10) durationSeconds = `0${durationSeconds}`;
+
+          // Avoid NaN display
+          if (durationSeconds) {
+            durationEl.textContent = `${durationMinutes}:${durationSeconds}`;
+          }
+
+          const currentMinutes = Math.floor(currentTime / 60);
+          let currentSeconds = Math.floor(currentTime % 60);
+          if (currentSeconds < 10) currentSeconds = `0${currentSeconds}`;
+          currentTimeEl.textContent = `${currentMinutes}:${currentSeconds}`;
+        }
+
+        // Set progress when clicking on progress bar
+        function setProgress(e) {
+          const width = this.clientWidth;
+          const clickX = e.offsetX;
+          const duration = audio.duration;
+          audio.currentTime = (clickX / width) * duration;
+        }
+
+        // Next song
+        function nextSong() {
+          currentSongIndex++;
+          if (currentSongIndex > songs.length - 1) {
+            currentSongIndex = 0;
+          }
+          loadSong(songs[currentSongIndex]);
+          audio.play();
+          playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+        }
+
+        // Previous song
+        function prevSong() {
+          currentSongIndex--;
+          if (currentSongIndex < 0) {
+            currentSongIndex = songs.length - 1;
+          }
+          loadSong(songs[currentSongIndex]);
+          audio.play();
+          playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+        }
+
+        // Set volume
+        function setVolume() {
+          audio.volume = this.value / 100;
+        }
+
+        // Event listeners
+        playBtn.addEventListener("click", togglePlay);
+        nextBtn.addEventListener("click", nextSong);
+        prevBtn.addEventListener("click", prevSong);
+        audio.addEventListener("timeupdate", updateProgress);
+        audio.addEventListener("ended", nextSong);
+        progressBar.addEventListener("click", setProgress);
+        volumeSlider.addEventListener("input", setVolume);
+
+        // Load first song
+        loadSong(songs[currentSongIndex]);
+      });
+    </script>
+  </body>
+</html>
